@@ -65,7 +65,7 @@ export async function uploadProfilePhoto(formData: FormData) {
   if (file.size > 2 * 1024 * 1024) return { success: false, error: "File exceeds 2MB limit" };
 
   try {
-    const uploadRes = await uploadApi.uploadFile(file, "foundation-erp/profiles", session.accessToken);
+    const uploadRes = await uploadApi.uploadFile(file, "foundation-erp/profiles", file.name, session.accessToken);
     await authApi.updateProfile({ photo: uploadRes.secure_url }, session.accessToken);
 
     revalidatePath("/profile");

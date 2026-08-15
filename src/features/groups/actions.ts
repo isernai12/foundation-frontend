@@ -48,7 +48,10 @@ export async function getGroups(): Promise<GroupWithCount[]> {
 
 export async function getMemberSignupGroups() {
   try {
-    const res = await groupsApi.list({ member_signup_enabled: true, page_size: 1000 });
+    const session = await getAuthSession();
+    const token = (session as any)?.accessToken;
+
+    const res = await groupsApi.list({ member_signup_enabled: true, status: "ACTIVE", page_size: 1000 }, token);
     return res.items
       .filter((g) => g.status === "ACTIVE" && g.member_signup_enabled && !g.is_foundation_group)
       .map((g) => ({
@@ -198,19 +201,21 @@ export async function archiveGroup(id: string) {
   }
 }
 
-export async function deleteGroup(id: string): Promise<{ success: boolean; error?: string }> {
+export async function deleteGroup(id: string): Promise<{ success: boolean; error?: string; message?: string }> {
   await requirePermission("Groups", "Delete");
   try {
     const session = await getAuthSession();
     const token = (session as any)?.accessToken;
 
-    const res = await groupsApi.update(id, { status: "INACTIVE" }, token);
+    const res = await groupsApi.delete(id, token);
 
     revalidatePath("/groups");
     revalidatePath("/groups/manage");
     revalidatePath("/groups", "layout");
     revalidatePath(`/groups/${id}`);
-    return { success: true, error: undefined };
+    revalidatePath("/members/manage");
+    revalidatePath("/donors/receive");
+    return { success: true, message: res?.message };
   } catch (error: any) {
     return { success: false, error: error.message || "Failed to delete group" };
   }

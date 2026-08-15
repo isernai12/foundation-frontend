@@ -12,9 +12,11 @@ async function uploadBase64(base64Str: string, folder: string) {
 
 export async function getGroups() {
   try {
-    const res = await groupsApi.list({ member_signup_enabled: true, page_size: 1000 });
+    const session = await getAuthSession();
+    const token = (session as any)?.accessToken;
+    const res = await groupsApi.list({ member_signup_enabled: true, status: "ACTIVE", page_size: 1000 }, token);
     return res.items
-      .filter((g) => !g.is_foundation_group && g.member_signup_enabled)
+      .filter((g) => !g.is_foundation_group && g.member_signup_enabled && g.status === "ACTIVE")
       .map((g) => ({
         id: g.id,
         name: g.name,

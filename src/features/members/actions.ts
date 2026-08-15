@@ -181,24 +181,24 @@ export async function createMember(data: MemberFormValues) {
     // Upload documents via backend upload API if provided
     const uploadedDocs = [];
     if (pd.photoBase64) {
-      const up = await uploadApi.uploadBase64(pd.photoBase64, "foundation/members/photos", token);
+      const up = await uploadApi.uploadBase64(pd.photoBase64, "foundation/members/photos", "photo.jpg", token);
       uploadedDocs.push({ title: "Member Photo", file_url: up.secure_url, cloudinary_public_id: up.public_id });
     }
     if (pd.signatureBase64) {
-      const up = await uploadApi.uploadBase64(pd.signatureBase64, "foundation/members/signatures", token);
+      const up = await uploadApi.uploadBase64(pd.signatureBase64, "foundation/members/signatures", "signature.png", token);
       uploadedDocs.push({ title: "Signature", file_url: up.secure_url, cloudinary_public_id: up.public_id });
     }
     if (pd.idDocumentType === "NID") {
       if (pd.nidFrontBase64) {
-        const up = await uploadApi.uploadBase64(pd.nidFrontBase64, "foundation/members/ids", token);
+        const up = await uploadApi.uploadBase64(pd.nidFrontBase64, "foundation/members/ids", "nid_front.jpg", token);
         uploadedDocs.push({ title: "NID Front", file_url: up.secure_url, cloudinary_public_id: up.public_id });
       }
       if (pd.nidBackBase64) {
-        const up = await uploadApi.uploadBase64(pd.nidBackBase64, "foundation/members/ids", token);
+        const up = await uploadApi.uploadBase64(pd.nidBackBase64, "foundation/members/ids", "nid_back.jpg", token);
         uploadedDocs.push({ title: "NID Back", file_url: up.secure_url, cloudinary_public_id: up.public_id });
       }
     } else if (pd.idDocumentType === "BIRTH_CERTIFICATE" && pd.birthCertificateBase64) {
-      const up = await uploadApi.uploadBase64(pd.birthCertificateBase64, "foundation/members/ids", token);
+      const up = await uploadApi.uploadBase64(pd.birthCertificateBase64, "foundation/members/ids", "birth_certificate.jpg", token);
       uploadedDocs.push({ title: "Birth Certificate", file_url: up.secure_url, cloudinary_public_id: up.public_id });
     }
 

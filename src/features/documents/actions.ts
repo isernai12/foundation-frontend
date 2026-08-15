@@ -28,7 +28,7 @@ export async function uploadDocument(formData: FormData) {
   try {
     const session = await getAuthSession();
     const token = (session as any)?.accessToken;
-    const res = await uploadApi.uploadFile(file, `foundation/documents/${targetType.toLowerCase()}`, token);
+    const res = await uploadApi.uploadFile(file, `foundation/documents/${targetType.toLowerCase()}`, file.name, token);
 
     revalidatePath("/documents");
     return {

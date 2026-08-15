@@ -8,15 +8,27 @@ export const uploadApi = {
   async uploadFile(
     file: File | Blob,
     folder: string = "foundation-erp",
-    filename?: string,
+    filenameOrToken?: string,
     token?: string
   ): Promise<MediaUploadResponse> {
+    let resolvedFilename = (file as File).name || "upload";
+    let resolvedToken = token;
+
+    if (filenameOrToken) {
+      // If 3 arguments were passed and the 3rd argument looks like a JWT/token
+      if (!token && (filenameOrToken.startsWith("eyJ") || filenameOrToken.length > 50 || !filenameOrToken.includes("."))) {
+        resolvedToken = filenameOrToken;
+      } else {
+        resolvedFilename = filenameOrToken;
+      }
+    }
+
     const formData = new FormData();
-    formData.append("file", file, filename || (file as File).name || "upload");
+    formData.append("file", file, resolvedFilename);
     formData.append("folder", folder);
     formData.append("resource_type", "auto");
 
-    return apiClient.post<MediaUploadResponse>("/api/v1/upload", formData, { token });
+    return apiClient.post<MediaUploadResponse>("/api/v1/upload", formData, { token: resolvedToken });
   },
 
   /**
@@ -25,17 +37,28 @@ export const uploadApi = {
   async uploadBase64(
     base64Data: string,
     folder: string = "foundation-erp",
-    filename?: string,
+    filenameOrToken?: string,
     token?: string
   ): Promise<MediaUploadResponse> {
+    let resolvedFilename: string | undefined = undefined;
+    let resolvedToken = token;
+
+    if (filenameOrToken) {
+      if (!token && (filenameOrToken.startsWith("eyJ") || filenameOrToken.length > 50 || !filenameOrToken.includes("."))) {
+        resolvedToken = filenameOrToken;
+      } else {
+        resolvedFilename = filenameOrToken;
+      }
+    }
+
     return apiClient.post<MediaUploadResponse>(
       "/api/v1/upload/base64",
       {
         data: base64Data,
         folder,
-        filename,
+        filename: resolvedFilename,
       },
-      { token }
+      { token: resolvedToken }
     );
   },
 

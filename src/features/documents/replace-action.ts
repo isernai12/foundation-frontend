@@ -14,7 +14,7 @@ export async function replaceDocument(documentId: string, formData: FormData) {
   try {
     const session = await getAuthSession();
     const token = (session as any)?.accessToken;
-    const res = await uploadApi.uploadFile(file, "foundation/documents", token);
+    const res = await uploadApi.uploadFile(file, "foundation/documents", file.name, token);
 
     revalidatePath("/documents");
     return {
