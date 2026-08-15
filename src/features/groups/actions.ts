@@ -135,6 +135,10 @@ export async function createGroup(data: GroupFormValues) {
     );
 
     revalidatePath("/groups");
+    revalidatePath("/groups/manage");
+    revalidatePath("/groups", "layout");
+    revalidatePath("/members/manage");
+    revalidatePath("/donors/receive");
     return { success: true, data: res };
   } catch (error: any) {
     return { success: false, error: error.message || "Failed to create group" };
@@ -166,7 +170,10 @@ export async function updateGroup(id: string, data: GroupFormValues) {
     );
 
     revalidatePath("/groups");
+    revalidatePath("/groups/manage");
+    revalidatePath("/groups", "layout");
     revalidatePath(`/groups/${id}`);
+    revalidatePath("/members/manage");
     return { success: true, data: res };
   } catch (error: any) {
     return { success: false, error: error.message || "Failed to update group" };
@@ -182,6 +189,9 @@ export async function archiveGroup(id: string) {
     const res = await groupsApi.update(id, { status: "INACTIVE" }, token);
 
     revalidatePath("/groups");
+    revalidatePath("/groups/manage");
+    revalidatePath("/groups", "layout");
+    revalidatePath(`/groups/${id}`);
     return { success: true, data: res };
   } catch (error: any) {
     return { success: false, error: error.message || "Failed to archive group" };
@@ -190,8 +200,20 @@ export async function archiveGroup(id: string) {
 
 export async function deleteGroup(id: string): Promise<{ success: boolean; error?: string }> {
   await requirePermission("Groups", "Delete");
-  revalidatePath("/groups");
-  return { success: true, error: undefined };
+  try {
+    const session = await getAuthSession();
+    const token = (session as any)?.accessToken;
+
+    const res = await groupsApi.update(id, { status: "INACTIVE" }, token);
+
+    revalidatePath("/groups");
+    revalidatePath("/groups/manage");
+    revalidatePath("/groups", "layout");
+    revalidatePath(`/groups/${id}`);
+    return { success: true, error: undefined };
+  } catch (error: any) {
+    return { success: false, error: error.message || "Failed to delete group" };
+  }
 }
 
 export async function getGroupMembers(groupId: string) {

@@ -41,9 +41,11 @@ import { archiveGroup, deleteGroup, updateGroup } from "../actions"
 import type { GroupWithCount } from "../types"
 import { useRbac } from "@/components/providers/rbac-provider"
 import { useLanguage } from "@/i18n/LanguageProvider";
+import { useRouter } from "next/navigation";
 
 export function GroupsTable({ data, manageMode = false }: { data: GroupWithCount[], manageMode?: boolean }) {
-    const { t } = useLanguage();
+  const { t } = useLanguage();
+  const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const { can } = useRbac()
@@ -178,8 +180,12 @@ export function GroupsTable({ data, manageMode = false }: { data: GroupWithCount
                               isFoundationGroup: group.isFoundationGroup ?? false,
                             }
                             const res = await updateGroup(group.id, payload)
-                            if (res.success) toast.success(t("groups.table.activateSuccess"))
-                            else toast.error(res.error)
+                            if (res.success) {
+                              toast.success(t("groups.table.activateSuccess"))
+                              router.refresh()
+                            } else {
+                              toast.error(res.error)
+                            }
                           }}
                         >
                           <Eye className="mr-2 h-4 w-4" /> {t("groups.table.actions.activate")}</DropdownMenuItem>
@@ -198,8 +204,12 @@ export function GroupsTable({ data, manageMode = false }: { data: GroupWithCount
                               isFoundationGroup: group.isFoundationGroup ?? false,
                             }
                             const res = await updateGroup(group.id, payload)
-                            if (res.success) toast.success(t("groups.table.deactivateSuccess"))
-                            else toast.error(res.error)
+                            if (res.success) {
+                              toast.success(t("groups.table.deactivateSuccess"))
+                              router.refresh()
+                            } else {
+                              toast.error(res.error)
+                            }
                           }}
                         >
                           <Eye className="mr-2 h-4 w-4" /> {t("groups.table.actions.deactivate")}</DropdownMenuItem>
@@ -212,8 +222,12 @@ export function GroupsTable({ data, manageMode = false }: { data: GroupWithCount
                         onClick={async () => {
                           if (confirm(t("groups.table.archiveConfirm"))) {
                             const res = await archiveGroup(group.id)
-                            if (res.success) toast.success(t("groups.table.archiveSuccess"))
-                            else toast.error(res.error)
+                            if (res.success) {
+                              toast.success(t("groups.table.archiveSuccess"))
+                              router.refresh()
+                            } else {
+                              toast.error(res.error)
+                            }
                           }
                         }}
                       >
@@ -223,8 +237,12 @@ export function GroupsTable({ data, manageMode = false }: { data: GroupWithCount
                         onClick={async () => {
                           if (confirm(t("groups.table.deleteConfirm"))) {
                             const res = await deleteGroup(group.id)
-                            if (res.success) toast.success(t("groups.table.deleteSuccess"))
-                            else toast.error(res.error)
+                            if (res.success) {
+                              toast.success(t("groups.table.deleteSuccess"))
+                              router.refresh()
+                            } else {
+                              toast.error(res.error)
+                            }
                           }
                         }}
                       >
