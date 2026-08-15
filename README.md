@@ -276,8 +276,7 @@ npm run start -- -p 3000
    ```
 
 ### Production Deployment
-1. Set `NEXT_PUBLIC_API_URL` in your hosting provider to the public HTTPS URL of your deployed FastAPI backend (e.g., `https://foundation-backend.onrender.com`).
-2. Verify that the backend's `CORS_ORIGINS` environment variable includes your frontend domain (e.g., `https://foundation-frontend.vercel.app`).
+Set `NEXT_PUBLIC_API_URL` in your hosting provider to the public HTTPS URL of your deployed FastAPI backend (e.g., `https://foundation-backend.onrender.com`).
 
 ---
 
@@ -318,15 +317,11 @@ pm2 start npm --name "foundation-frontend" -- start -- -p 3000
 - **Cause**: The FastAPI backend is not running or the port is mismatched.
 - **Fix**: Start the backend service and verify by accessing `http://127.0.0.1:8000/health`.
 
-### 2. Browser CORS Errors (`Access to fetch blocked by CORS policy`)
-- **Cause**: The backend's `CORS_ORIGINS` does not allow the frontend origin.
-- **Fix**: Update `CORS_ORIGINS` in `backend/.env` to include your frontend URL (e.g. `http://localhost:3000`).
-
-### 3. NextAuth `JWT_SESSION_ERROR` or Login Redirection Loop
+### 2. NextAuth `JWT_SESSION_ERROR` or Login Redirection Loop
 - **Cause**: `NEXTAUTH_SECRET` is missing or `NEXTAUTH_URL` does not match the browser's address.
 - **Fix**: Ensure `NEXTAUTH_SECRET` is configured with a 32+ character key and `NEXTAUTH_URL` matches your exact domain.
 
-### 4. Build Error: `PrismaClientInitializationError`
+### 3. Build Error: `PrismaClientInitializationError`
 - **Cause**: Next.js build executing static generation without generated Prisma types.
 - **Fix**: The build script `npm run build` runs `prisma generate && next build` automatically. Ensure dependencies are up to date.
 
